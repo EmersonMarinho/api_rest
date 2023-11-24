@@ -1,19 +1,24 @@
 import fasity from 'fastify'
 import { knex } from './database'
+import crypto from 'node:crypto'
+import { env } from './env'
 
 const app = fasity()
 
-// GET, POST, PUT, PATCH, DELETE
-
-// http://localhost:3333/hello
-
 app.get('/hello', async () => {
-  const tables = await knex('sqlite_schema').select('*')
-  return tables
+  const transactions = await knex('transactions')
+    .insert({
+      id: crypto.randomUUID(),
+      title: 'Transação de teste',
+      amount: 200,
+    })
+    .returning('*')
+
+  return transactions
 })
 
 app
   .listen({
-    port: 3333,
+    port: env.PORT,
   })
   .then(() => console.log('Server is running!'))
