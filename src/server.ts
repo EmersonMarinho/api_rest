@@ -1,21 +1,10 @@
 import fasity from 'fastify'
-import { knex } from './database'
-import crypto from 'node:crypto'
 import { env } from './env'
+import { transcationsRoutes } from './routes/transactions'
 
 const app = fasity()
 
-app.get('/hello', async () => {
-  const transactions = await knex('transactions')
-    .insert({
-      id: crypto.randomUUID(),
-      title: 'Transação de teste',
-      amount: 200,
-    })
-    .returning('*')
-
-  return transactions
-})
+app.register(transcationsRoutes, { prefix: '/transactions' })
 
 app
   .listen({
